@@ -1,0 +1,36 @@
+name: AION2 CM Story Telegram Alert
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check-aion2:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: 저장소 가져오기
+        uses: actions/checkout@v4
+
+      - name: Python 실행
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: AION2 CM 아지트 확인
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python check_aion2.py
+
+      - name: 마지막 공지 저장
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add last_cm_story.json
+          git diff --cached --quiet || git commit -m "Update last CM story"
+          git push
