@@ -9,41 +9,20 @@ jobs:
   check-aion2:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - name: 저장소 가져오기
         uses: actions/checkout@v4
 
-      - name: Python 실행
-        uses: actions/setup-python@v5
+      - name: 마지막 확인 글 불러오기
+        uses: actions/cache@v4
         with:
-          python-version: "3.x"
+          path: last_cm_story.json
+          key: aion2-state-${{ github.run_id }}
+          restore-keys: |
+            aion2-state-
 
-      - name: AION2 CM 아지트 확인
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python check_aion2.py
-
-  name: AION2 CM Story Telegram Alert
-
-on:
-  schedule:
-    - cron: "*/5 * * * *"
-  workflow_dispatch:
-
-jobs:
-  check-aion2:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 저장소 가져오기
-        uses: actions/checkout@v4
-
-      - name: Python 실행
-        uses: actions/setup-python@v5
+      - name: Python 설정
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
